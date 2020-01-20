@@ -1,3 +1,7 @@
+## Ediary
+
+본 프로젝트는 인간의 벨류를 담을 수 있는 그릇을 만드는 프로젝트의 1단계입니다.
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
