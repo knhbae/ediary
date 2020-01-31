@@ -23,7 +23,7 @@ import TableCell from "@material-ui/core/TableCell";
 const styles = theme => ({
   root: {
     width: "100%",
-    minWidth: 1080
+    minWidth: 600
     // marginTop: theme.spacing(3),
     // overflowX: "auto"
   },
@@ -42,6 +42,17 @@ class App extends Component {
     userHistory: "",
     item: "",
     completed: 0
+  };
+
+  stateRefresh = () => {
+    this.setState({
+      userHistory: "",
+      completed: 0
+      // searchKeyword: ""
+    });
+    this.callHistoryApi()
+      .then(res => this.setState({ userHistory: res }))
+      .catch(err => console.log(err));
   };
 
   componentDidMount() {
@@ -97,7 +108,7 @@ class App extends Component {
 
   render() {
     const { classes } = this.props;
-    const cellList = ["일", "감정", "시간"];
+    const cellList = ["일", "감정", "시간", "설정"];
     return (
       <div>
         <p>{this.state.item}</p>
@@ -164,6 +175,7 @@ class App extends Component {
                 this.state.userHistory.map(c => {
                   return (
                     <UserHistory
+                      stateRefresh={this.stateRefresh}
                       key={c.id}
                       id={c.id}
                       emotion={c.emotion}

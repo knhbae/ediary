@@ -35,18 +35,29 @@ app.get("/api/userEmotions", (req, res) => {
 });
 
 app.get("/api/userHistory", (req, res) => {
-  connection.query("select * from user_history", (err, rows, fields) => {
-    res.send(rows);
-  });
+  connection.query(
+    "select * from user_history where isDeleted = 0",
+    (err, rows, fields) => {
+      res.send(rows);
+    }
+  );
 });
 
 app.post("/api/historys", (req, res) => {
-  let sql = "insert into user_history values (null,?,?,now())";
+  let sql = "insert into user_history values (null,?,?,now(),0)";
   let item = req.body.item;
   let emotion = req.body.emotion;
   console.log(item, emotion);
   let params = [item, emotion];
   connection.query(sql, params, (err, rows, fileds) => {
+    res.send(rows);
+  });
+});
+
+app.delete("/api/historys/:id", (req, res) => {
+  let sql = "update user_history set isDeleted = 1 where id = ?";
+  let params = [req.params.id];
+  connection.query(sql, params, (err, rows, fields) => {
     res.send(rows);
   });
 });
