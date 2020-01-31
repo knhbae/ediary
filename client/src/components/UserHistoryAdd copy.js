@@ -1,24 +1,10 @@
 import React, { Component } from "react";
 import { post } from "axios";
-// import logo from "./logo.svg";
-import "./App.css";
-import ObjectItem from "./components/OjbectItem";
-import UserEmotion from "./components/UserEmotion";
-import UserHistory from "./components/UserHistory";
-import UserHistoryAdd from "./components/UserHistoryAdd";
 import Button from "@material-ui/core/Button";
 
 //Progress Bar
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { withStyles } from "@material-ui/core/styles";
-
-//Table
-import Paper from "@material-ui/core/Paper";
-import Table from "@material-ui/core/Table";
-import TableHead from "@material-ui/core/TableHead";
-import TableBody from "@material-ui/core/TableBody";
-import TableRow from "@material-ui/core/TableRow";
-import TableCell from "@material-ui/core/TableCell";
 
 const styles = theme => ({
   root: {
@@ -35,15 +21,17 @@ const styles = theme => ({
   }
 });
 
-class App extends Component {
-  state = {
-    objectItems: "",
-    userEmotions: "",
-    userHistory: "",
-    item: "",
-    completed: 0
-  };
-
+class UserHistoryAdd extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      item: "",
+      emotion: "",
+      objectItems: "",
+      userEmotions: "",
+      completed: 0
+    };
+  }
   componentDidMount() {
     this.timer = setInterval(this.progress, 20);
     this.callItemApi()
@@ -52,9 +40,9 @@ class App extends Component {
     this.callEmotionApi()
       .then(res => this.setState({ userEmotions: res }))
       .catch(err => console.log(err));
-    this.callHistoryApi()
-      .then(res => this.setState({ userHistory: res }))
-      .catch(err => console.log(err));
+    // this.callHistoryApi()
+    //   .then(res => this.setState({ userHistory: res }))
+    //   .catch(err => console.log(err));
   }
   callItemApi = async () => {
     const response = await fetch("/api/objectItems");
@@ -69,41 +57,85 @@ class App extends Component {
     return body;
   };
 
-  callHistoryApi = async () => {
-    const response = await fetch("/api/userHistory");
-    const body = await response.json();
-    console.log(body);
-    return body;
-  };
+  // callHistoryApi = async () => {
+  //   const response = await fetch("/api/userHistory");
+  //   const body = await response.json();
+  //   console.log(body);
+  //   return body;
+  // };
 
   progress = () => {
     const { completed } = this.state;
     this.setState({ completed: completed >= 100 ? 0 : completed + 1 });
   };
 
-  //추가 실험
-  handleClickItem = e => {
+  handleFormSubmit = e => {
     // debugger;
-    this.setState({
-      item: e.target.innerText
+    e.preventDefault();
+    this.addHitory().then(response => {
+      console.log(response.data);
+      this.props.stateRefresh();
     });
-  };
-  handleClickEmotion = e => {
-    // debugger;
     this.setState({
-      emotion: e.target.innerText
+      item: "",
+      emotion: ""
+    });
+    window.location.reload();
+  };
+
+  handleValueChange = e => {
+    let nextState = {};
+    nextState[e.target.name] = e.target.value;
+    this.setState(nextState);
+  };
+
+  handleClickItem = e => {
+    this.setState({
+      item: e.target.value
     });
   };
 
+  handleClickEmotion = e => {
+    this.setState({
+      emotion: e.target.value
+    });
+  };
+
+  addHitory = () => {
+    const url = "/api/historys";
+
+    const formData = {
+      item: this.state.item,
+      emotion: this.state.emotion
+    };
+
+    // const formData = new FormData();
+
+    // formData.append("item", this.state.item);
+    // formData.append("emotion", this.state.emotion);
+
+    const config = {
+      headers: {
+        // "content-type": "multipart/form-data"
+        "content-type": "application/json"
+      }
+    };
+
+    return post(url, formData, config);
+  };
   render() {
     const { classes } = this.props;
-    const cellList = ["일", "감정", "시간"];
     return (
       <div>
-        <p>{this.state.item}</p>
         {this.state.objectItems ? (
           this.state.objectItems.map(c => {
             return (
+              // <ObjectItem
+              //   key={c.id}
+              //   id={c.id}
+              //   item={c.item}
+              //   // onClick={this.callItemApi()}
+              // />
               <Button
                 variant="contained"
                 color="primary"
@@ -127,13 +159,12 @@ class App extends Component {
         {this.state.userEmotions ? (
           this.state.userEmotions.map(c => {
             return (
-              // <UserEmotion key={c.id} id={c.id} emotion={c.emotion} />
               <Button
                 variant="contained"
                 color="primary"
                 key={c.id}
                 id={c.id}
-                emotion={c.emotion}
+                item={c.emotion}
                 onClick={this.handleClickEmotion}
               >
                 {c.emotion}
@@ -147,44 +178,28 @@ class App extends Component {
             value={this.state.completed}
           />
         )}
-
-        <Paper className={classes.paper}>
-          <Table className={classes.table}>
-            <TableHead>
-              <TableRow>
-                {cellList.map(c => {
-                  return (
-                    <TableCell className={classes.tableHead}>{c}</TableCell>
-                  );
-                })}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {this.state.userHistory ? (
-                this.state.userHistory.map(c => {
-                  return (
-                    <UserHistory
-                      key={c.id}
-                      id={c.id}
-                      emotion={c.emotion}
-                      item={c.item}
-                      createdate={c.createdate}
-                    />
-                  );
-                })
-              ) : (
-                <CircularProgress
-                  className={classes.progress}
-                  variant="determinate"
-                  value={this.state.completed}
-                />
-              )}
-            </TableBody>
-          </Table>
-        </Paper>
-        <UserHistoryAdd item={this.state.item} emotion={this.state.emotion} />
+        <form onSubmit={this.handleFormSubmit}>
+          <h1>History 추가</h1>
+          item:
+          <input
+            type="text"
+            name="item"
+            value={this.state.item}
+            onChange={this.handleValueChange}
+          />
+          {/* <br /> */}
+          {/* emotion:
+          <input
+            type="text"
+            name="emotion"
+            value={this.state.emotion}
+            onChange={this.handleValueChange}
+          /> */}
+          <button type="submit">추가하기</button>
+        </form>
       </div>
     );
   }
 }
-export default withStyles(styles)(App);
+
+export default withStyles(styles)(UserHistoryAdd);

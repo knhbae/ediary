@@ -28,4 +28,27 @@ app.get("/api/objectItems", (req, res) => {
   });
 });
 
+app.get("/api/userEmotions", (req, res) => {
+  connection.query("select * from User_Emotion", (err, rows, fields) => {
+    res.send(rows);
+  });
+});
+
+app.get("/api/userHistory", (req, res) => {
+  connection.query("select * from user_history", (err, rows, fields) => {
+    res.send(rows);
+  });
+});
+
+app.post("/api/historys", (req, res) => {
+  let sql = "insert into user_history values (null,?,?,now())";
+  let item = req.body.item;
+  let emotion = req.body.emotion;
+  console.log(item, emotion);
+  let params = [item, emotion];
+  connection.query(sql, params, (err, rows, fileds) => {
+    res.send(rows);
+  });
+});
+
 app.listen(port, () => console.log(`Listening on port ${port}`));
