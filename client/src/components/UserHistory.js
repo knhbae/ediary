@@ -9,7 +9,7 @@ class UserHistory extends Component {
       <TableRow>
         <TableCell>{this.props.item}</TableCell>
         <TableCell>{this.props.emotion}</TableCell>
-        <TableCell>{this.props.createdate}</TableCell>
+        {/* <TableCell>{this.props.createdate}</TableCell> */}
         <TableCell>
           <UserHistoryDelete
             stateRefresh={this.props.stateRefresh}

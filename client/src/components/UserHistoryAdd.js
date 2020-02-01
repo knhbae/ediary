@@ -55,18 +55,19 @@ class UserHistoryAdd extends Component {
   render() {
     return (
       <form onSubmit={this.handleFormSubmit}>
-        <h1>History 추가</h1>
-        item:
+        {/* item: */}
         <input
-          type="text"
+          // type="text"
+          type="hidden"
           name="item"
           value={this.props.item}
           onChange={this.handleValueChange}
         />
         <br />
-        emotion:
+        {/* emotion: */}
         <input
-          type="text"
+          // type="text"
+          type="hidden"
           name="emotion"
           value={this.props.emotion}
           onChange={this.handleValueChange}

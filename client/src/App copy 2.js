@@ -135,32 +135,31 @@ class App extends Component {
     return (
       <div>
         <ButtonAppBar />
-        <br />
-        <div align="center">
-          {this.state.objectItems ? (
-            this.state.objectItems.map(c => {
-              return (
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  className={classes.poundButton}
-                  key={c.id}
-                  id={c.id}
-                  item={c.item}
-                  onClick={this.handleClickItem}
-                >
-                  #{c.item}
-                </Button>
-              );
-            })
-          ) : (
-            <CircularProgress
-              className={classes.progress}
-              variant="determinate"
-              value={this.state.completed}
-            />
-          )}
-        </div>
+
+        <p>{this.state.item}</p>
+        {this.state.objectItems ? (
+          this.state.objectItems.map(c => {
+            return (
+              <Button
+                variant="outlined"
+                color="primary"
+                className={classes.poundButton}
+                key={c.id}
+                id={c.id}
+                item={c.item}
+                onClick={this.handleClickItem}
+              >
+                #{c.item}
+              </Button>
+            );
+          })
+        ) : (
+          <CircularProgress
+            className={classes.progress}
+            variant="determinate"
+            value={this.state.completed}
+          />
+        )}
         <br />
         <br />
         {this.state.userEmotions ? (
@@ -188,16 +187,6 @@ class App extends Component {
           />
         )}
 
-        <p align="center">
-          <Button variant="outlined" color="primary">
-            {this.state.item}
-          </Button>{" "}
-          <Fab className={classes.emotionButton}>{this.state.emotion}</Fab>
-        </p>
-        <div align="center">
-          <UserHistoryAdd item={this.state.item} emotion={this.state.emotion} />
-          <br />
-        </div>
         <Paper className={classes.paper}>
           <Table className={classes.table}>
             <TableHead>
@@ -233,6 +222,7 @@ class App extends Component {
             </TableBody>
           </Table>
         </Paper>
+        <UserHistoryAdd item={this.state.item} emotion={this.state.emotion} />
       </div>
     );
   }
