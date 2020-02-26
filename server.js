@@ -34,6 +34,7 @@ app.get("/api/userEmotions", (req, res) => {
   });
 });
 
+/* 2020.02.22 deleted for adding rank
 app.get("/api/userHistory", (req, res) => {
   connection.query(
     "select * from user_history where isDeleted = 0",
@@ -41,14 +42,40 @@ app.get("/api/userHistory", (req, res) => {
       res.send(rows);
     }
   );
+}); */
+
+app.get("/api/userHistory", (req, res) => {
+  connection.query(
+    `select 	c.*, d.percent 
+    from 	user_history c left join
+        (select  y.item_id, ifnull(x.a_cnt, 0)/y.q_cnt as percent
+        from	(select 	b.item_id, count(b.item_id) as q_cnt
+        from	object_item a left join
+            item_questions b
+        on		a.id = b.item_id
+        group	by b.item_id) y left join
+        (select 	b.item_id, count(b.item_id) as a_cnt
+        from	object_item a,
+            question_answers b
+        where	a.id = b.item_id
+        group 	by b.item_id) x
+        on	x.item_id = y.item_id) d
+    on		c.item_id = d.item_id
+    where	c.isDeleted = 0`,
+    (err, rows, fields) => {
+      res.send(rows);
+    }
+  );
 });
 
 app.post("/api/historys", (req, res) => {
-  let sql = "insert into user_history values (null,?,?,now(),0)";
+  let sql = "insert into user_history values (null,?,?,now(),0,?,?)";
   let item = req.body.item;
   let emotion = req.body.emotion;
-  console.log(item, emotion);
-  let params = [item, emotion];
+  let item_id = req.body.item_id;
+  let emotion_id = req.body.emotion_id;
+  console.log(item, emotion, item_id, emotion_id);
+  let params = [item, emotion, item_id, emotion_id];
   connection.query(sql, params, (err, rows, fileds) => {
     res.send(rows);
   });
@@ -61,5 +88,51 @@ app.delete("/api/historys/:id", (req, res) => {
     res.send(rows);
   });
 });
+
+app.post("/api/addQuestionAnswers", (req, res) => {
+  let sql = "insert into question_answers values (null,?,?,?,now(),0,?)";
+  let history_id = req.body.history_id;
+  let question_id = req.body.question_id;
+  let answer = req.body.answer;
+  let item_id = req.body.item_id;
+  console.log(history_id, question_id, answer, item_id);
+  let params = [history_id, question_id, answer, item_id];
+  connection.query(sql, params, (err, rows, fileds) => {
+    res.send(rows);
+  });
+});
+
+app.get("/api/userQuestion/:id", (req, res) => {
+  // let params = 1;
+  let sql =
+    "select 	a.*,b.*, a.id as qid, a.item_id as qitem_id from	item_questions a left join question_answers b on  a.id = b.question_id where	b.question_id is null and		a.item_id = ? limit   1";
+  let params = [req.params.id];
+  connection.query(sql, params, (err, rows, fields) => {
+    res.send(rows);
+  });
+});
+
+// app.get("/api/itemRank/:id", (req, res) => {
+//   // let params = 1;
+//   let sql = `
+//             select  ifnull(x.a_cnt, 0)/y.q_cnt as percent
+//             from	(select 	b.item_id, count(b.item_id) as q_cnt
+//             from	object_item a left join
+//                 item_questions b
+//             on		a.id = b.item_id
+//             group	by b.item_id) y left join
+//             (select 	b.item_id, count(b.item_id) as a_cnt
+//             from	object_item a,
+//                 question_answers b
+//             where	a.id = b.item_id
+//             group 	by b.item_id) x
+//             on	x.item_id = y.item_id
+//             where	y.item_id = ?
+//             `;
+//   let params = [req.params.id];
+//   connection.query(sql, params, (err, rows, fields) => {
+//     res.send(rows);
+//   });
+// });
 
 app.listen(port, () => console.log(`Listening on port ${port}`));

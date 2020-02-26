@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-import { post } from "axios";
+// import { post } from "axios";
 // import logo from "./logo.svg";
 import "./App.css";
-import ObjectItem from "./components/OjbectItem";
-import UserEmotion from "./components/UserEmotion";
+// import ObjectItem from "./components/OjbectItem";
+// import UserEmotion from "./components/UserEmotion";
 import UserHistory from "./components/UserHistory";
 import UserHistoryAdd from "./components/UserHistoryAdd";
 import Button from "@material-ui/core/Button";
@@ -62,7 +62,11 @@ class App extends Component {
     objectItems: "",
     userEmotions: "",
     userHistory: "",
+    item_id: "",
     item: "",
+    emotion_id: "",
+    emotion: "",
+    rank: "",
     completed: 0
   };
 
@@ -74,6 +78,12 @@ class App extends Component {
     });
     this.callHistoryApi()
       .then(res => this.setState({ userHistory: res }))
+      .catch(err => console.log(err));
+    this.callItemApi()
+      .then(res => this.setState({ objectItems: res }))
+      .catch(err => console.log(err));
+    this.callEmotionApi()
+      .then(res => this.setState({ userEmotions: res }))
       .catch(err => console.log(err));
   };
 
@@ -89,23 +99,24 @@ class App extends Component {
       .then(res => this.setState({ userHistory: res }))
       .catch(err => console.log(err));
   }
+
   callItemApi = async () => {
     const response = await fetch("/api/objectItems");
     const body = await response.json();
-    console.log(body);
+    // console.log(body);
     return body;
   };
   callEmotionApi = async () => {
     const response = await fetch("/api/userEmotions");
     const body = await response.json();
-    console.log(body);
+    // console.log(body);
     return body;
   };
 
   callHistoryApi = async () => {
     const response = await fetch("/api/userHistory");
     const body = await response.json();
-    console.log(body);
+    // console.log(body);
     return body;
   };
 
@@ -118,14 +129,29 @@ class App extends Component {
   handleClickItem = e => {
     // debugger;
     this.setState({
-      item: e.target.innerText
+      item_id: e.currentTarget.id,
+      item: e.currentTarget.innerText
+      // item: item
     });
+    console.log(this.state.item_id, this.state.item);
   };
+
+  // handleClickItem = (id, item) => {
+  //   // debugger;
+  //   this.setState({
+  //     item_id: id,
+  //     item: item
+  //     // item: item
+  //   });
+  // };
+
   handleClickEmotion = e => {
     // debugger;
     this.setState({
-      emotion: e.target.innerText
+      emotion_id: e.currentTarget.id,
+      emotion: e.currentTarget.innerText
     });
+    console.log(this.state.emotion_id, this.state.emotion);
   };
 
   render() {
@@ -163,53 +189,61 @@ class App extends Component {
         </div>
         <br />
         <br />
-        {this.state.userEmotions ? (
-          this.state.userEmotions.map(c => {
-            return (
-              // <UserEmotion key={c.id} id={c.id} emotion={c.emotion} />
-              <Fab
-                // variant="contained"
-                // color="secondary"
-                className={classes.emotionButton}
-                key={c.id}
-                id={c.id}
-                emotion={c.emotion}
-                onClick={this.handleClickEmotion}
-              >
-                {c.emotion}
-              </Fab>
-            );
-          })
-        ) : (
-          <CircularProgress
-            className={classes.progress}
-            variant="determinate"
-            value={this.state.completed}
-          />
-        )}
-
-        <p align="center">
+        <div align="center">
+          {this.state.userEmotions ? (
+            this.state.userEmotions.map(c => {
+              return (
+                // <UserEmotion key={c.id} id={c.id} emotion={c.emotion} />
+                <Fab
+                  // variant="contained"
+                  // color="secondary"
+                  className={classes.emotionButton}
+                  key={c.id}
+                  id={c.id}
+                  emotion={c.emotion}
+                  onClick={this.handleClickEmotion}
+                >
+                  {c.emotion}
+                </Fab>
+              );
+            })
+          ) : (
+            <CircularProgress
+              className={classes.progress}
+              variant="determinate"
+              value={this.state.completed}
+            />
+          )}
+        </div>
+        <div align="center">
           <Button variant="outlined" color="primary">
             {this.state.item}
           </Button>{" "}
           <Fab className={classes.emotionButton}>{this.state.emotion}</Fab>
-        </p>
+        </div>
         <div align="center">
-          <UserHistoryAdd item={this.state.item} emotion={this.state.emotion} />
+          <UserHistoryAdd
+            item={this.state.item}
+            emotion={this.state.emotion}
+            item_id={this.state.item_id}
+            emotion_id={this.state.emotion_id}
+          />
           <br />
         </div>
-        <Paper className={classes.paper}>
-          <Table className={classes.table}>
-            <TableHead>
-              <TableRow>
+        <Paper className={classes.paper} align="center">
+          <Table className={classes.table} align="center">
+            <TableHead align="center">
+              <TableRow align="center">
                 {cellList.map(c => {
                   return (
-                    <TableCell className={classes.tableHead}>{c}</TableCell>
+                    <TableCell className={classes.tableHead} align="center">
+                      {c}
+                    </TableCell>
                   );
                 })}
               </TableRow>
             </TableHead>
-            <TableBody>
+            <TableBody align="center">
               {this.state.userHistory ? (
                 this.state.userHistory.map(c => {
                   return (
@@ -218,8 +252,12 @@ class App extends Component {
                       key={c.id}
                       id={c.id}
                       emotion={c.emotion}
+                      emotion_id={c.emotion_id}
                       item={c.item}
+                      item_id={c.item_id}
+                      rank={c.percent}
                       createdate={c.createdate}
+                      align="center"
                     />
                   );
                 })

@@ -2,7 +2,7 @@
 
 # database
 /database.json
-
+/database2.json
 # dependencies
 /node_modules
 /.pnp

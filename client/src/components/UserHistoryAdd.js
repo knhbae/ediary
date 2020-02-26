@@ -6,7 +6,9 @@ class UserHistoryAdd extends Component {
     super(props);
     this.state = {
       item: "",
-      emotion: ""
+      emotion: "",
+      item_id: "",
+      emotion_id: ""
     };
   }
 
@@ -35,9 +37,12 @@ class UserHistoryAdd extends Component {
 
     const formData = {
       item: this.props.item,
-      emotion: this.props.emotion
+      emotion: this.props.emotion,
+      item_id: this.props.item_id,
+      emotion_id: this.props.emotion_id
     };
-
+    console.log(formData);
+    debugger;
     // const formData = new FormData();
 
     // formData.append("item", this.state.item);
@@ -70,6 +75,22 @@ class UserHistoryAdd extends Component {
           type="hidden"
           name="emotion"
           value={this.props.emotion}
+          onChange={this.handleValueChange}
+        />
+        <input
+          // type="text"
+          type="hidden"
+          name="item_id"
+          value={this.props.item_id}
+          onChange={this.handleValueChange}
+        />
+        <br />
+        {/* emotion: */}
+        <input
+          // type="text"
+          type="hidden"
+          name="emotion_id"
+          value={this.props.emotion_id}
           onChange={this.handleValueChange}
         />
         <button type="submit">추가하기</button>

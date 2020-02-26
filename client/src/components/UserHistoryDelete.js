@@ -35,7 +35,7 @@ class UserHistoryDelete extends Component {
   }
   render() {
     return (
-      <div>
+      <div align="center">
         <Button
           variant="contained"
           color="secondary"
