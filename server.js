@@ -90,12 +90,13 @@ app.delete("/api/historys/:id", (req, res) => {
 });
 
 app.post("/api/addQuestionAnswers", (req, res) => {
-  let sql = "insert into question_answers values (null,?,?,?,now(),0,?)";
+  let sql = "insert into question_answers values (null,?,?,?,0,now(),?)";
   let history_id = req.body.history_id;
   let question_id = req.body.question_id;
   let answer = req.body.answer;
   let item_id = req.body.item_id;
   console.log(history_id, question_id, answer, item_id);
+  debugger;
   let params = [history_id, question_id, answer, item_id];
   connection.query(sql, params, (err, rows, fileds) => {
     res.send(rows);
@@ -112,27 +113,31 @@ app.get("/api/userQuestion/:id", (req, res) => {
   });
 });
 
-// app.get("/api/itemRank/:id", (req, res) => {
-//   // let params = 1;
-//   let sql = `
-//             select  ifnull(x.a_cnt, 0)/y.q_cnt as percent
-//             from	(select 	b.item_id, count(b.item_id) as q_cnt
-//             from	object_item a left join
-//                 item_questions b
-//             on		a.id = b.item_id
-//             group	by b.item_id) y left join
-//             (select 	b.item_id, count(b.item_id) as a_cnt
-//             from	object_item a,
-//                 question_answers b
-//             where	a.id = b.item_id
-//             group 	by b.item_id) x
-//             on	x.item_id = y.item_id
-//             where	y.item_id = ?
-//             `;
-//   let params = [req.params.id];
-//   connection.query(sql, params, (err, rows, fields) => {
-//     res.send(rows);
-//   });
-// });
+app.post("/api/addHistoryDetails", (req, res) => {
+  let sql =
+    "insert into user_history_details values (null,?,?,?,?,?,?,?,0,now())";
+  let history_id = req.body.history_id;
+  let item_id = req.body.item_id;
+  let sub_item_id = req.body.sub_item_id;
+  let sub_title = req.body.sub_title;
+  let duration = req.body.duration;
+  let progress = req.body.progress;
+  let memo = req.body.memo;
+
+  let params = [
+    history_id,
+    item_id,
+    sub_item_id,
+    sub_title,
+    duration,
+    progress,
+    memo
+  ];
+  console.log(params);
+  connection.query(sql, params, (err, rows, fileds) => {
+    res.send(rows);
+  });
+  // console.log(err);
+});
 
 app.listen(port, () => console.log(`Listening on port ${port}`));

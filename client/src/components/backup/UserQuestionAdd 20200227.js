@@ -126,7 +126,7 @@ class UserQuestionAdd extends Component {
     const formData = {
       history_id: this.props.id,
       item_id: this.props.item_id,
-      sub_item_id: 4,
+      sub_item_id: this.state.sub_item_id,
       sub_title: this.state.sub_title,
       duration: this.state.duration,
       progress: this.state.progress,
@@ -203,6 +203,23 @@ class UserQuestionAdd extends Component {
           </DialogTitle>
           <DialogContent>
             <div>
+              <FormControl className={classes.formControl}>
+                <InputLabel id="demo-simple-select-label">제목</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  name="sub_title"
+                  // value={this.state.sub_title}
+                  onChange={this.handleValueChange}
+                >
+                  <MenuItem value="">
+                    <em>제목선택</em>
+                  </MenuItem>
+                  <MenuItem value={10}>10</MenuItem>
+                  <MenuItem value={20}>Twenty</MenuItem>
+                  <MenuItem value={"직접입력하세요"}>직접입력</MenuItem>
+                </Select>
+              </FormControl>
               <form className={classes.root} noValidate autoComplete="off">
                 <TextField
                   id="standard-basic"

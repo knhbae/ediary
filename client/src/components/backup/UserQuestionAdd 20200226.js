@@ -9,51 +9,53 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import { withStyles } from "@material-ui/core/styles";
 // import { DialogContentText } from "@material-ui/core";
-import UserQuestionCall from "./UserQuestionCall";
+// import UserQuestionCall from "./UserQuestionCall";
 import CircularProgress from "@material-ui/core/CircularProgress";
+
+import ItemAddList1 from "./ItemAddList";
 
 const styles = theme => ({
   hidden: {
     display: "none"
   },
   historyItem: {
-    background: "linear-gradient(90deg, white 70%, skyblue 90%)",
+    background: "linear-gradient(90deg, red 90%, white 70%)",
     border: 0,
     borderRadius: 3,
-    boxShadow: "0 3px 5px 2px rgba(255, 105, 135, .3)",
+    boxShadow: "0 3px 5px 2px rgba(255, 105, 135, .5)",
     color: "white",
     height: 48,
     padding: "0 30px"
   },
   historyItem10: {
-    background: "linear-gradient(90deg, white 10%, skyblue 90%)"
+    background: "linear-gradient(90deg, red 10%, white 90% )"
   },
   historyItem20: {
-    background: "linear-gradient(90deg, white 20%, skyblue 90%)"
+    background: "linear-gradient(90deg, red 20%, white 90% )"
   },
   historyItem30: {
-    background: "linear-gradient(90deg, white 30%, skyblue 90%)"
+    background: "linear-gradient(90deg, red 30%, white 90% )"
   },
   historyItem40: {
-    background: "linear-gradient(90deg, white 40%, skyblue 90%)"
+    background: "linear-gradient(90deg, red 40%, white 90% )"
   },
   historyItem50: {
-    background: "linear-gradient(90deg, white 50%, skyblue 90%)"
+    background: "linear-gradient(90deg, red 50%, white 90% )"
   },
   historyItem60: {
-    background: "linear-gradient(90deg, white 60%, skyblue 90%)"
+    background: "linear-gradient(90deg, red 60%, white 90% )"
   },
   historyItem70: {
-    background: "linear-gradient(90deg, white 70%, skyblue 90%)"
+    background: "linear-gradient(90deg, red 70%, white 90% )"
   },
   historyItem80: {
-    background: "linear-gradient(90deg, white 80%, skyblue 90%)"
+    background: "linear-gradient(90deg, red 80%, white 90% )"
   },
   historyItem90: {
-    background: "linear-gradient(90deg, white 90%, skyblue 90%)"
+    background: "linear-gradient(90deg, red 90%, white 90% )"
   },
   historyItem100: {
-    background: "linear-gradient(90deg, white 100%, skyblue 90%)"
+    background: "linear-gradient(90deg, red 100%, white 90% )"
   }
 });
 
@@ -63,16 +65,12 @@ class UserQuestionAdd extends Component {
     this.state = {
       questions: "",
       answer: "",
-      open: false
+      // percent: "",
+      open: false,
+      completed: 0
     };
   }
 
-  componentDidMount() {
-    this.timer = setInterval(this.progress, 20);
-    this.callQuestionApi()
-      .then(res => this.setState({ questions: res }))
-      .catch(err => console.log(err));
-  }
   callQuestionApi = async () => {
     const url = "/api/userQuestion/" + this.props.item_id;
     const response = await fetch(url);
@@ -106,10 +104,10 @@ class UserQuestionAdd extends Component {
     const url = "/api/addQuestionAnswers";
     const formData = {
       history_id: this.props.id,
-      question_id: 4,
-      answer: this.state.answer
+      question_id: this.state.questions[0].qid,
+      answer: this.state.answer,
+      item_id: this.state.questions[0].qitem_id
     };
-
     const config = {
       headers: {
         "content-type": "application/json"
@@ -119,6 +117,10 @@ class UserQuestionAdd extends Component {
   };
 
   handleClickOpen = () => {
+    this.timer = setInterval(this.progress, 20);
+    this.callQuestionApi()
+      .then(res => this.setState({ questions: res }))
+      .catch(err => console.log(err));
     this.setState({
       open: true
     });
@@ -136,8 +138,9 @@ class UserQuestionAdd extends Component {
   render() {
     const { classes } = this.props;
     let classHistoryItem = classes.historyItem10;
-    let rank = 30;
-
+    // let rank = 30;
+    let rank = this.props.rank * 100;
+    // console.log(rank);
     if (rank > 90) {
       classHistoryItem = classes.historyItem100;
     } else if (rank > 80) {
@@ -188,6 +191,7 @@ class UserQuestionAdd extends Component {
             {/* <UserQuestionCall id={this.props.item_id} /> */}
           </DialogTitle>
           <DialogContent>
+            <ItemAddList1 />
             <TextField
               label="응답"
               type="text"

@@ -9,73 +9,51 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import { withStyles } from "@material-ui/core/styles";
 // import { DialogContentText } from "@material-ui/core";
-// import UserQuestionCall from "./UserQuestionCall";
-// import CircularProgress from "@material-ui/core/CircularProgress";
-
-// import ItemAddList1 from "./ItemAddList1";
-//Add list
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-// import FormHelperText from "@material-ui/core/FormHelperText";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-// import TextField from "@material-ui/core/TextField";
+import UserQuestionCall from "../UserQuestionCall";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const styles = theme => ({
-  root: {
-    "& > *": {
-      margin: theme.spacing(1),
-      width: 200
-    }
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120
-  },
-  selectEmpty: {
-    marginTop: theme.spacing(2)
-  },
   hidden: {
     display: "none"
   },
   historyItem: {
-    background: "linear-gradient(90deg, red 90%, white 70%)",
+    background: "linear-gradient(90deg, white 70%, skyblue 90%)",
     border: 0,
     borderRadius: 3,
-    boxShadow: "0 3px 5px 2px rgba(255, 105, 135, .5)",
+    boxShadow: "0 3px 5px 2px rgba(255, 105, 135, .3)",
     color: "white",
     height: 48,
     padding: "0 30px"
   },
   historyItem10: {
-    background: "linear-gradient(90deg, red 10%, white 90% )"
+    background: "linear-gradient(90deg, white 10%, skyblue 90%)"
   },
   historyItem20: {
-    background: "linear-gradient(90deg, red 20%, white 90% )"
+    background: "linear-gradient(90deg, white 20%, skyblue 90%)"
   },
   historyItem30: {
-    background: "linear-gradient(90deg, red 30%, white 90% )"
+    background: "linear-gradient(90deg, white 30%, skyblue 90%)"
   },
   historyItem40: {
-    background: "linear-gradient(90deg, red 40%, white 90% )"
+    background: "linear-gradient(90deg, white 40%, skyblue 90%)"
   },
   historyItem50: {
-    background: "linear-gradient(90deg, red 50%, white 90% )"
+    background: "linear-gradient(90deg, white 50%, skyblue 90%)"
   },
   historyItem60: {
-    background: "linear-gradient(90deg, red 60%, white 90% )"
+    background: "linear-gradient(90deg, white 60%, skyblue 90%)"
   },
   historyItem70: {
-    background: "linear-gradient(90deg, red 70%, white 90% )"
+    background: "linear-gradient(90deg, white 70%, skyblue 90%)"
   },
   historyItem80: {
-    background: "linear-gradient(90deg, red 80%, white 90% )"
+    background: "linear-gradient(90deg, white 80%, skyblue 90%)"
   },
   historyItem90: {
-    background: "linear-gradient(90deg, red 90%, white 90% )"
+    background: "linear-gradient(90deg, white 90%, skyblue 90%)"
   },
   historyItem100: {
-    background: "linear-gradient(90deg, red 100%, white 90% )"
+    background: "linear-gradient(90deg, white 100%, skyblue 90%)"
   }
 });
 
@@ -83,16 +61,24 @@ class UserQuestionAdd extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      sub_item_id: 4,
-      sub_title: "",
-      duration: "",
-      progress: "",
-      memo: "",
-      open: false,
-      completed: 0
+      questions: "",
+      answer: "",
+      open: false
     };
   }
 
+  componentDidMount() {
+    this.timer = setInterval(this.progress, 20);
+    this.callQuestionApi()
+      .then(res => this.setState({ questions: res }))
+      .catch(err => console.log(err));
+  }
+  callQuestionApi = async () => {
+    const url = "/api/userQuestion/" + this.props.item_id;
+    const response = await fetch(url);
+    const body = await response.json();
+    return body;
+  };
   progress = () => {
     const { completed } = this.state;
     this.setState({ completed: completed >= 100 ? 0 : completed + 1 });
@@ -102,36 +88,28 @@ class UserQuestionAdd extends Component {
     e.preventDefault();
     this.addAnswer().then(response => {
       console.log(response.data);
-      // this.props.stateRefresh();
+      this.props.stateRefresh();
     });
     this.setState({
-      sub_item_id: "",
-      sub_title: "",
-      duration: "",
-      progress: "",
-      memo: "",
+      answer: "",
       open: false
     });
     // window.location.reload();
   };
 
   handleValueChange = e => {
-    // this.timer = setInterval(this.progress, 200);
     let nextState = {};
     nextState[e.target.name] = e.target.value;
     this.setState(nextState);
   };
   addAnswer = () => {
-    const url = "/api/addHistoryDetails";
+    const url = "/api/addQuestionAnswers";
     const formData = {
       history_id: this.props.id,
-      item_id: this.props.item_id,
-      sub_item_id: 4,
-      sub_title: this.state.sub_title,
-      duration: this.state.duration,
-      progress: this.state.progress,
-      memo: this.state.memo
+      question_id: 4,
+      answer: this.state.answer
     };
+
     const config = {
       headers: {
         "content-type": "application/json"
@@ -141,7 +119,6 @@ class UserQuestionAdd extends Component {
   };
 
   handleClickOpen = () => {
-    this.timer = setInterval(this.progress, 20);
     this.setState({
       open: true
     });
@@ -149,22 +126,18 @@ class UserQuestionAdd extends Component {
 
   handleClose = () => {
     this.setState({
-      sub_item_id: "",
-      sub_title: "",
-      duration: "",
-      progress: "",
-      memo: "",
+      //   history_id: "",
+      questions: "",
+      answer: "",
       open: false
     });
-    // debugger;
   };
 
   render() {
     const { classes } = this.props;
     let classHistoryItem = classes.historyItem10;
-    // let rank = 30;
-    let rank = this.props.rank * 100;
-    // console.log(rank);
+    let rank = 30;
+
     if (rank > 90) {
       classHistoryItem = classes.historyItem100;
     } else if (rank > 80) {
@@ -199,46 +172,30 @@ class UserQuestionAdd extends Component {
         </Button>
         <Dialog open={this.state.open} onClose={this.handleClose}>
           <DialogTitle>
-            <div>입력</div>
+            <div>
+              {this.state.questions ? (
+                this.state.questions.map(c => {
+                  return <div>{c.question}</div>;
+                })
+              ) : (
+                <CircularProgress
+                  className={classes.progress}
+                  variant="determinate"
+                  value={this.state.completed}
+                />
+              )}
+            </div>
+            {/* <UserQuestionCall id={this.props.item_id} /> */}
           </DialogTitle>
           <DialogContent>
-            <div>
-              <form className={classes.root} noValidate autoComplete="off">
-                <TextField
-                  id="standard-basic"
-                  label="제목"
-                  placeholder="제목신규입력"
-                  name="sub_title"
-                  value={this.state.sub_title}
-                  onChange={this.handleValueChange}
-                />
-                <br />
-                <TextField
-                  id="standard-basic"
-                  label="투자시간"
-                  name="duration"
-                  value={this.state.duration}
-                  onChange={this.handleValueChange}
-                />
-                <br />
-                <TextField
-                  id="standard-basic"
-                  label="진도"
-                  name="progress"
-                  value={this.state.progress}
-                  onChange={this.handleValueChange}
-                />
-                <br />
-                <TextField
-                  id="outlined-basic"
-                  label="#태그"
-                  name="memo"
-                  value={this.state.memo}
-                  onChange={this.handleValueChange}
-                  variant="outlined"
-                />
-              </form>
-            </div>
+            <TextField
+              label="응답"
+              type="text"
+              name="answer"
+              value={this.state.answer}
+              onChange={this.handleValueChange}
+            />
+            <br />
           </DialogContent>
           <DialogActions>
             <Button
